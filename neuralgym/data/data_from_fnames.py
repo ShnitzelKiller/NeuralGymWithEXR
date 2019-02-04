@@ -148,7 +148,10 @@ class DataFromFNames(Dataset):
                 self._queue.size(), dtypes.float32) * (1. / capacity))
 
     def read_img(self, filename):
-        img = cv2.imread(filename)
+        if filename[-3:] == exr:
+            img = cv2.imread(filename, cv2.IMREAD_ANYDEPTH | cv2.IMREAD_COLOR)
+        else:
+            img = cv2.imread(filename)
         if img is None:
             logger.info('image is None, sleep this thread for 0.1s.')
             time.sleep(0.1)
