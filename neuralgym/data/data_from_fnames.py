@@ -148,7 +148,7 @@ class DataFromFNames(Dataset):
                 self._queue.size(), dtypes.float32) * (1. / capacity))
 
     def read_img(self, filename):
-        if filename[-3:] == exr:
+        if filename[-3:] == 'exr':
             img = cv2.imread(filename, cv2.IMREAD_ANYDEPTH | cv2.IMREAD_COLOR)
         else:
             img = cv2.imread(filename)
