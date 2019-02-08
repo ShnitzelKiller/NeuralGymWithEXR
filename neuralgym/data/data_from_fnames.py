@@ -149,7 +149,7 @@ class DataFromFNames(Dataset):
 
     def read_img(self, filename):
         if filename[-3:] == 'exr':
-            img = cv2.imread(filename, cv2.IMREAD_ANYDEPTH | cv2.IMREAD_COLOR)
+            img = cv2.imread(filename, cv2.IMREAD_ANYDEPTH | cv2.IMREAD_COLOR) * 255
         else:
             img = cv2.imread(filename)
         if img is None:
