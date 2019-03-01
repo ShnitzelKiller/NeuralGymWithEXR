@@ -9,6 +9,7 @@ import tensorflow as tf
 from . import feeding_queue_runner as queue_runner
 from .dataset import Dataset
 from ..ops.image_ops import np_random_crop
+import numpy as np
 
 
 logger = logging.getLogger()
@@ -150,6 +151,7 @@ class DataFromFNames(Dataset):
     def read_img(self, filename):
         if filename[-3:] == 'exr':
             img = cv2.imread(filename, cv2.IMREAD_ANYDEPTH | cv2.IMREAD_COLOR) * 255
+            img = img.astype(np.uint8)
         else:
             img = cv2.imread(filename)
         if img is None:
