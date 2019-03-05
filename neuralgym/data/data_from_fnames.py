@@ -67,7 +67,9 @@ class DataFromFNames(Dataset):
     def __init__(self, fnamelists, shapes, random=False, random_crop=False,
                  fn_preprocess=None, dtypes=tf.float32,
                  enqueue_size=32, queue_size=256, nthreads=16,
-                 return_fnames=False, filetype='image'):
+                 return_fnames=False, filetype='image', gamma=1, exposure=1):
+        self.exposure=exposure
+        self.gamma=gamma
         self.fnamelists_ = self.process_fnamelists(fnamelists)
         self.file_length = len(self.fnamelists_)
         self.random = random
@@ -148,10 +150,11 @@ class DataFromFNames(Dataset):
             self._queue.name, summary_name), math_ops.cast(
                 self._queue.size(), dtypes.float32) * (1. / capacity))
 
-    def read_img(self, filename):
+    def read_img(self, filename, gamma=1, exposure=1):
         if filename[-3:] == 'exr':
-            img = cv2.imread(filename, cv2.IMREAD_ANYDEPTH | cv2.IMREAD_COLOR) * 255
-            img = (np.clip(img, 0, 255)).astype(np.uint8)
+            img = cv2.imread(filename, cv2.IMREAD_ANYDEPTH | cv2.IMREAD_COLOR)
+            img = exposure * img ** gamma
+            img = (np.clip(img*255, 0, 255)).astype(np.uint8)
         else:
             img = cv2.imread(filename)
         if img is None:
@@ -178,7 +181,7 @@ class DataFromFNames(Dataset):
                 random_h = None
                 random_w = None
                 for i in range(len(filenames)):
-                    img, error = self.read_img(filenames[i])
+                    img, error = self.read_img(filenames[i], gamma=self.gamma, exposure=self.exposure)
                     if self.random_crop:
                         img, random_h, random_w = np_random_crop(
                             img, tuple(self.shapes[i][:-1]),
