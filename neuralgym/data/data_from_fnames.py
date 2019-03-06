@@ -153,7 +153,7 @@ class DataFromFNames(Dataset):
     def read_img(self, filename, gamma=1, exposure=1):
         if filename[-3:] == 'exr':
             img = cv2.imread(filename, cv2.IMREAD_ANYDEPTH | cv2.IMREAD_COLOR)
-            img = exposure * img ** gamma
+            img = (exposure * img) ** gamma
             img = (np.clip(img*255, 0, 255)).astype(np.uint8)
         else:
             img = cv2.imread(filename)
