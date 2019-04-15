@@ -62,20 +62,6 @@ def gan_wgan_loss(pos, neg, name='gan_wgan_loss'):
         scalar_summary('neg_value_avg', tf.reduce_mean(neg))
     return g_loss, d_loss
 
-def gan_sngan_loss(pos, neg, name='gan_sngan_loss'):
-    """
-    sngan loss function for GANs.
-    - Spectral Normalization GAN: https://arxiv.org/pdf/1802.05957.pdf
-    """
-    with tf.variable_scope(name):
-        d_loss = tf.reduce_mean(tf.nn.relu(1+neg)) + tf.reduce_mean(tf.nn.relu(1-pos))
-        g_loss = -tf.reduce_mean(neg)
-        scalar_summary('d_loss', d_loss)
-        scalar_summary('g_loss', g_loss)
-        scalar_summary('pos_value_avg', tf.reduce_mean(pos))
-        scalar_summary('neg_value_avg', tf.reduce_mean(neg))
-    return g_loss, d_loss
-
 
 def random_interpolates(x, y, alpha=None):
     """
