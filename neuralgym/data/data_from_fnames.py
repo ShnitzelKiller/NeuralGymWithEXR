@@ -9,6 +9,7 @@ import tensorflow as tf
 from . import feeding_queue_runner as queue_runner
 from .dataset import Dataset
 from ..ops.image_ops import np_random_crop
+import numpy as np
 
 
 READER_LOCK = threading.Lock()
@@ -65,7 +66,10 @@ class DataFromFNames(Dataset):
     def __init__(self, fnamelists, shapes, random=False, random_crop=False,
                  fn_preprocess=None, dtypes=tf.float32,
                  enqueue_size=32, queue_size=256, nthreads=16,
-                 return_fnames=False, filetype='image'):
+                 return_fnames=False, filetype='image', gamma=1, exposure=1, random_flip=False):
+        self.exposure=exposure
+        self.gamma=gamma
+        self.random_flip = random_flip
         self.fnamelists_ = self.process_fnamelists(fnamelists)
         self.file_length = len(self.fnamelists_)
         self.random = random
@@ -146,8 +150,13 @@ class DataFromFNames(Dataset):
             # self._queue.name, summary_name), math_ops.cast(
                 # self._queue.size(), dtypes.float32) * (1. / capacity))
 
-    def read_img(self, filename):
-        img = cv2.imread(filename)
+    def read_img(self, filename, gamma=1, exposure=1):
+        if filename[-3:] == 'exr':
+            img = cv2.imread(filename, cv2.IMREAD_ANYDEPTH | cv2.IMREAD_COLOR)
+            img = (exposure * img) ** gamma
+            img = (np.clip(img*255, 0, 255)).astype(np.uint8)
+        else:
+            img = cv2.imread(filename)
         if img is None:
             print('image is None, sleep this thread for 0.1s.')
             time.sleep(0.1)
@@ -171,14 +180,19 @@ class DataFromFNames(Dataset):
                 imgs = []
                 random_h = None
                 random_w = None
+                if self.random_flip:
+                    flip = random.randbits(1)
                 for i in range(len(filenames)):
-                    img, error = self.read_img(filenames[i])
+                    img, error = self.read_img(filenames[i], gamma=self.gamma, exposure=self.exposure)
                     if self.random_crop:
                         img, random_h, random_w = np_random_crop(
                             img, tuple(self.shapes[i][:-1]),
                             random_h, random_w, align=False)  # use last rand
                     else:
                         img = cv2.resize(img, tuple(self.shapes[i][:-1][::-1]))
+                    if self.random_flip:
+                        if flip:
+                            img = np.flip(img, 1)
                     imgs.append(img)
             if self.return_fnames:
                 batch_data.append(imgs + list(filenames))
