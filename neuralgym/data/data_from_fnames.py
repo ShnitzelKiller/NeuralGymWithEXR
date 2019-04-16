@@ -182,7 +182,7 @@ class DataFromFNames(Dataset):
                 random_h = None
                 random_w = None
                 if self.random_flip:
-                    flip = random.randbits(1)
+                    flip = random.getrandbits(1)
                 for i in range(len(filenames)):
                     img, error = self.read_img(filenames[i], gamma=self.gamma, exposure=self.exposure)
                     if self.random_crop:
