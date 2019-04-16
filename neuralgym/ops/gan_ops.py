@@ -138,7 +138,7 @@ def kernel_spectral_norm(kernel, iteration=1, name='kernel_sn'):
 class Conv2DSepctralNorm(tf.layers.Conv2D):
     def build(self, input_shape):
         super(Conv2DSepctralNorm, self).build(input_shape)
-        self.kernel = kernel_spectral_norm(self.kernel, name=self.name + '_kernel_spectral_sn')
+        self.kernel = kernel_spectral_norm(self.kernel)
 
 
 def conv2d_spectral_norm(
