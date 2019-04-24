@@ -145,6 +145,7 @@ class Trainer(object):
                 assert not np.isnan(loss_value)
                 # log one
                 if self.context['log_progress']:
+                    print('logging progress')
                     self.progress_logger(step, loss_value)
                 # periodic callbacks at step end
                 for cb in self._periodic_callbacks:
@@ -191,6 +192,7 @@ class Trainer(object):
         epoch_end = (step % spe == 0)
         # set update step 0.1%
         log_per_iters = max(int(spe/1000), 10)
+        print('log per iters: ', log_per_iters)
         # update progress bar per log_per_iters
         epoch_nums = (step - 1) // spe + 1
         epoch_iters = (step - 1) % spe + 1
