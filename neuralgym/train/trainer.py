@@ -144,6 +144,7 @@ class Trainer(object):
                 # if nan, exist
                 assert not np.isnan(loss_value)
                 print('not nan')
+                print(self.context['log_progress'])
                 # log one
                 if self.context['log_progress']:
                     print('logging progress')
