@@ -137,8 +137,10 @@ class Trainer(object):
                             step in cb.schedule):
                         cb.run(sess, step)
                 # run train op
+                print('running train op')
                 _, loss_value = sess.run([self._train_op, self._loss],
                                          feed_dict=self.context['feed_dict'])
+                print('ran train op')
                 # if nan, exist
                 assert not np.isnan(loss_value)
                 # log one
