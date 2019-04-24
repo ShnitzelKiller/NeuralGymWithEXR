@@ -143,6 +143,7 @@ class Trainer(object):
                 print('ran train op')
                 # if nan, exist
                 assert not np.isnan(loss_value)
+                print('not nan')
                 # log one
                 if self.context['log_progress']:
                     print('logging progress')
